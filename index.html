@@ -4,283 +4,468 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consulta de Prazos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
 [hidden] { display: none !important; }
 
+:root {
+  --azul: #2d8cff;
+  --azul-esc: #1457c9;
+  --ambar: #ffb020;
+  --verde: #19c37d;
+  --texto: #eef4ff;
+  --suave: #a9bbd6;
+  --glass: rgba(14, 32, 60, 0.62);
+  --borda: rgba(255, 255, 255, 0.12);
+  --raio: 16px;
+  --topbar-h: 60px;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background: url('fundo.jpeg') no-repeat center center fixed;
-  background-size: cover;
-  background-color: #0b2a4a;
-  color: white;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--texto);
+  background-color: #071a33;
+  -webkit-font-smoothing: antialiased;
+}
+/* Fundo fixo: foto escurecida por um degradê para dar leitura */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(5, 16, 34, 0.72) 0%, rgba(5, 16, 34, 0.92) 100%),
+    url('fundo.jpeg') center / cover no-repeat;
 }
 
-.container {
-  text-align: center;
-  margin-top: 8vh;
-  margin-bottom: 15vh;
-  padding: 0 8px;
+/* ---------- Topo ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  height: var(--topbar-h);
+  background: rgba(7, 22, 44, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--borda);
 }
-
-h1 {
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-  margin-bottom: 6vh;
-}
-
-.menu { display: flex; justify-content: center; margin-bottom: 30px; }
-.menu ul { list-style: none; display: flex; flex-direction: column; gap: 15px; padding: 0; margin: 0; }
-.menu a {
-  background: linear-gradient(90deg, orange, gold);
-  color: black;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 5px 5px 8px rgba(0,0,0,0.8);
-  transition: 0.3s;
-  display: inline-block;
-}
-.menu a:hover { background: linear-gradient(90deg, gold, orange); transform: scale(1.05); }
-
-/* Busca */
-#searchGeral {
-  padding: 12px 20px;
-  width: 80%;
-  max-width: 400px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  font-size: 16px;
-  color: #333;
-  box-shadow: 0 0 10px rgba(255,255,255,0.2);
-}
-
-/* Filtros */
-.filtros {
+.topbar-inner {
+  max-width: 1100px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin: 16px auto 0;
-  max-width: 900px;
+  align-items: center;
+  justify-content: space-between;
 }
-.filtros select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 14px;
-  color: #333;
-  background: #fff;
-  max-width: 260px;
+.brand {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--suave);
 }
+.topbar-actions { display: flex; gap: 8px; }
 
-/* Botões gerais */
+/* ---------- Botões ---------- */
 .btn {
-  border: none;
+  border: 1px solid transparent;
   padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
+  border-radius: 12px;
+  font: inherit;
   font-size: 14px;
-  box-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-  transition: 0.2s;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.15s, filter 0.15s, background 0.15s;
 }
-.btn:hover:not(:disabled) { transform: scale(1.04); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-verde { background: linear-gradient(90deg, #00e676, #00c853); color: #000; }
-.btn-laranja { background: linear-gradient(90deg, orange, gold); color: #000; }
-.btn-cinza { background: #cfd8dc; color: #222; }
-.btn-vermelho { background: #ef5350; color: #fff; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: linear-gradient(135deg, var(--azul), var(--azul-esc)); box-shadow: 0 6px 16px rgba(45, 140, 255, 0.3); }
+.btn-success { background: linear-gradient(135deg, #22d68a, #12a368); color: #04170f; }
+.btn-warn { background: linear-gradient(135deg, #ffc23d, #ff9a1f); color: #241500; }
+.btn-ghost { background: rgba(255, 255, 255, 0.08); border-color: var(--borda); }
+.btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); }
+.btn.ativo { background: linear-gradient(135deg, #ffc23d, #ff9a1f); color: #241500; border-color: transparent; }
 
-/* Barra admin */
+/* ---------- Conteúdo ---------- */
+.container { max-width: 1100px; margin: 0 auto; padding: 32px 16px 90px; }
+
+.hero { text-align: center; margin-bottom: 26px; }
+.hero h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+.hero-sub { margin: 8px 0 18px; color: var(--suave); font-size: 1.02rem; }
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb020, #ffd35c);
+  color: #231600;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(255, 176, 32, 0.28);
+  transition: transform 0.2s;
+}
+.pill-link:hover { transform: translateY(-2px) scale(1.02); }
+
+.card {
+  background: var(--glass);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+}
+
+/* ---------- Aviso de acréscimo ---------- */
+.banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border-radius: var(--raio);
+  background: linear-gradient(135deg, rgba(255, 176, 32, 0.22), rgba(255, 110, 32, 0.12));
+  border: 1px solid rgba(255, 176, 32, 0.55);
+  text-align: left;
+}
+.banner-icone { font-size: 24px; line-height: 1.2; }
+.banner-titulo { font-weight: 700; margin-bottom: 4px; }
+.banner-nota { color: var(--suave); font-size: 13px; margin-top: 4px; }
+.banner-linha { margin: 6px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.banner-linha b { margin-right: 4px; }
+
+/* ---------- Barra admin ---------- */
 .admin-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 20px;
+  margin: 0 0 18px;
+  padding: 12px;
+  border-radius: var(--raio);
+  background: rgba(255, 176, 32, 0.1);
+  border: 1px dashed rgba(255, 176, 32, 0.5);
 }
 .admin-tag {
-  background: rgba(255, 193, 7, 0.9);
-  color: #000;
-  font-weight: bold;
+  background: var(--ambar);
+  color: #241500;
+  font-weight: 700;
   padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-/* Tabela */
-.table-wrapper { overflow-x: auto; margin-top: 24px; }
-table {
-  width: 90%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  background: rgba(20, 20, 20, 0.8);
-  border-radius: 10px;
-  backdrop-filter: blur(4px);
+/* ---------- Busca e filtros ---------- */
+.busca-card { padding: 18px; margin-bottom: 18px; }
+.busca { position: relative; }
+.busca-icone { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.8; }
+#searchGeral {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px 0 46px;
+  border-radius: 14px;
+  border: 1px solid var(--borda);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--texto);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-th, td { padding: 12px; border: 1px solid rgba(255,255,255,0.3); }
-th { background: rgba(0,0,0,0.9); }
-th.ord { cursor: pointer; user-select: none; }
-th.ord:hover { background: rgba(60,60,60,0.95); }
-th.ord.asc::after { content: " ▲"; font-size: 11px; color: #ffeb3b; }
-th.ord.desc::after { content: " ▼"; font-size: 11px; color: #ffeb3b; }
-tr:hover td { background-color: rgba(255,255,255,0.1); }
+#searchGeral::placeholder { color: var(--suave); }
+#searchGeral:focus { border-color: var(--azul); box-shadow: 0 0 0 4px rgba(45, 140, 255, 0.22); }
 
+.filtros { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.filtros select { flex: 1 1 200px; }
+.filtros .btn { flex: 0 0 auto; }
+
+select, .modal-box input:not([type=checkbox]):not([type=radio]):not([type=file]) {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--borda);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+select:focus, .modal-box input:focus { border-color: var(--azul); box-shadow: 0 0 0 3px rgba(45, 140, 255, 0.22); }
+select option { background: #0f2342; color: #fff; }
+input[type=date] { color-scheme: dark; }
+
+/* ---------- Tabela ---------- */
+.tabela-card { overflow: clip; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; }
+th {
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 5;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--suave);
+  background: rgba(8, 22, 44, 0.96);
+  border-bottom: 1px solid var(--borda);
+}
+th.ord { cursor: pointer; user-select: none; transition: color 0.15s; }
+th.ord:hover { color: #fff; }
+th.ord.asc::after { content: " ▲"; font-size: 10px; color: var(--ambar); }
+th.ord.desc::after { content: " ▼"; font-size: 10px; color: var(--ambar); }
+td { padding: 13px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); font-size: 14.5px; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(45, 140, 255, 0.1); }
+.td-cidade { font-weight: 600; }
+
+.badge-transp {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: hsl(var(--h) 55% 24%);
+  color: hsl(var(--h) 90% 85%);
+  border: 1px solid hsl(var(--h) 55% 40%);
+  white-space: nowrap;
+}
+.uf { font-weight: 700; letter-spacing: 0.05em; }
+.chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+}
+.chip-capital { background: rgba(45, 140, 255, 0.18); color: #9ccbff; border-color: rgba(45, 140, 255, 0.45); }
+.chip-interior { background: rgba(25, 195, 125, 0.14); color: #86ecc0; border-color: rgba(25, 195, 125, 0.4); }
+.chip-outro { background: rgba(167, 139, 250, 0.16); color: #d0c0ff; border-color: rgba(167, 139, 250, 0.42); }
+.vazio { color: var(--suave); opacity: 0.6; }
+
+/* Prazo com acréscimo */
+.prazo-wrap { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prazo-novo { font-weight: 800; font-size: 16px; }
+.prazo-novo.com-extra { color: #ffcb6b; }
+.prazo-base { color: var(--suave); text-decoration: line-through; font-size: 12.5px; }
+.tag-extra {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 176, 32, 0.18);
+  color: #ffcb6b;
+  border: 1px solid rgba(255, 176, 32, 0.5);
+  white-space: nowrap;
+}
+
+/* Ações do admin */
 .col-acoes { display: none; white-space: nowrap; }
 body.is-admin .col-acoes { display: table-cell; }
-.acao {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 2px 6px;
-}
+.acao { background: none; border: none; cursor: pointer; font-size: 18px; padding: 2px 6px; transition: transform 0.15s; }
 .acao:hover { transform: scale(1.25); }
 
-#btnMais { margin-top: 18px; }
-
-/* Infos */
-#contadorResultados { margin-top: 15px; font-size: 14px; }
-#ultimaAtualizacao {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #ffeb3b;
-  text-shadow: 1px 1px 2px black;
+/* ---------- Rodapé da lista ---------- */
+.rodape-lista { text-align: center; margin-top: 20px; }
+#contadorResultados {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--borda);
+  font-size: 13px;
+  font-weight: 600;
 }
+#contadorResultados:empty { display: none; }
+#ultimaAtualizacao { margin: 12px 0 0; font-size: 13px; color: #ffd86b; }
 
-/* Botões fixos */
-.download-btn, .admin-btn {
-  position: fixed;
-  top: 20px;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 4px 4px 8px rgba(0,0,0,0.6);
-  z-index: 999;
-  transition: 0.2s;
-}
-.download-btn { left: 20px; background: linear-gradient(90deg, #00e676, #00c853); color: black; }
-.admin-btn { right: 20px; background: rgba(255,255,255,0.9); color: #222; }
-.admin-btn.ativo { background: linear-gradient(90deg, orange, gold); }
-.download-btn:hover, .admin-btn:hover { transform: scale(1.05); }
-
-/* Modais */
+/* ---------- Modais ---------- */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 12px;
+  padding: 14px;
+  background: rgba(3, 10, 22, 0.72);
+  backdrop-filter: blur(4px);
 }
 .modal-box {
-  background: #1b2a3a;
-  color: #fff;
-  border-radius: 12px;
-  padding: 22px;
   width: 100%;
   max-width: 520px;
-  max-height: 90vh;
+  max-height: 92vh;
   overflow-y: auto;
+  padding: 24px;
   text-align: left;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  background: #0f2342;
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  animation: surgir 0.18s ease-out;
 }
-.modal-pequeno { max-width: 340px; }
-.modal-box h2 { margin-top: 0; }
-.modal-box label { display: block; margin-bottom: 12px; font-size: 14px; }
-.modal-box input[type=text], .modal-box input:not([type]), .modal-box input[type=password] {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 4px;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  font-size: 15px;
-}
-.modal-box input[type=file] { margin: 8px 0 14px; max-width: 100%; }
-.modal-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
-.muted { color: #b0bec5; font-size: 14px; }
-.erro { color: #ff8a80; font-size: 14px; margin: 8px 0 0; }
-.modos { border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; margin: 0 0 12px; padding: 10px 12px; }
-.modos label { margin: 6px 0; cursor: pointer; }
-.previa {
-  background: rgba(255,255,255,0.08);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  line-height: 1.5;
-}
+@keyframes surgir { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+.modal-pequeno { max-width: 360px; }
+.modal-largo { max-width: 900px; }
+.modal-box h2 { margin: 0 0 6px; font-size: 1.3rem; }
+.muted { color: var(--suave); font-size: 14px; line-height: 1.5; margin: 0 0 14px; }
+.erro { color: #ff9a9a; font-size: 14px; margin: 10px 0 0; }
+.campo { display: block; margin-bottom: 12px; font-size: 12px; font-weight: 600; color: var(--suave); }
+.campo input, .campo select { display: block; margin-top: 5px; }
+.modal-box input[type=file] { margin: 0 0 14px; max-width: 100%; color: var(--suave); }
+.modal-acoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+.modos { border: 1px solid var(--borda); border-radius: 12px; margin: 0 0 14px; padding: 8px 14px; }
+.modos label { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; font-size: 14px; cursor: pointer; line-height: 1.4; }
+.modos input { margin-top: 3px; }
+.previa { background: rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.6; }
 .previa .aviso { color: #ffd54f; }
 
-/* Toast */
+/* Acréscimos */
+.acr-lista { display: grid; gap: 10px; margin-bottom: 12px; }
+.acr-linha {
+  display: grid;
+  grid-template-columns: 1.5fr 0.7fr 1.3fr 1fr 1fr auto auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.acr-linha .campo { margin: 0; }
+.switch { display: flex; align-items: center; gap: 6px; height: 44px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.switch input { width: 18px; height: 18px; accent-color: var(--verde); }
+.acr-vazio { padding: 18px; text-align: center; color: var(--suave); border: 1px dashed var(--borda); border-radius: 14px; font-size: 14px; }
+
+/* ---------- Toast ---------- */
 .toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #323232;
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 8px;
   z-index: 3000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   max-width: 90%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: #1c2f4d;
+  border: 1px solid var(--borda);
+  color: #fff;
+  font-size: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-.toast.erro-toast { background: #c62828; }
+.toast.erro-toast { background: #8e1f1f; }
 
-/* Responsivo */
-@media (max-width: 600px) {
-  .container { margin-top: 70px; }
-  h1 { font-size: 1.5rem; margin-bottom: 4vh; }
-  #searchGeral { width: 90%; }
-  table { font-size: 12px; width: 98%; }
-  th, td { padding: 8px 6px; }
-  .download-btn, .admin-btn { top: 10px; padding: 8px 10px; font-size: 12px; }
-  .download-btn { left: 10px; }
-  .admin-btn { right: 10px; }
+/* ---------- Celular: linhas viram cartões ---------- */
+@media (max-width: 720px) {
+  .so-desktop { display: none; }
+  .container { padding-top: 22px; }
+  .acr-linha { grid-template-columns: 1fr 1fr; }
+  .acr-linha .campo-transp, .acr-linha .campo-motivo { grid-column: 1 / -1; }
+
+  .tabela-card { background: transparent; border: none; box-shadow: none; backdrop-filter: none; overflow: visible; }
+  table, tbody, tr, td { display: block; }
+  thead { display: none; }
+  tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    margin-bottom: 12px;
+    padding: 14px;
+    background: var(--glass);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    backdrop-filter: blur(10px);
+  }
+  tbody tr:hover td { background: none; }
+  td { padding: 0; border: none; font-size: 14px; }
+  td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--suave);
+  }
+  td.td-cidade { grid-column: 1 / -1; font-size: 18px; font-weight: 700; }
+  td.td-cidade::before { display: none; }
+  td.sem { display: none; }
+  td.td-dias { grid-column: 1 / -1; }
+  body.is-admin td.col-acoes { display: block; grid-column: 1 / -1; text-align: right; }
+  td.col-acoes::before { display: none; }
 }
   </style>
 </head>
 <body>
-  <button id="btnDownload" class="download-btn">⬇ Baixar planilha</button>
-  <button id="btnAdmin" class="admin-btn">🔒 Administrador</button>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="brand">DIS Comércio · Logística</span>
+      <div class="topbar-actions">
+        <button id="btnDownload" class="btn btn-ghost" title="Baixar a lista filtrada em Excel">⬇ <span class="so-desktop">Baixar planilha</span></button>
+        <button id="btnAdmin" class="btn btn-ghost">🔒 <span class="so-desktop">Administrador</span></button>
+      </div>
+    </div>
+  </header>
 
-  <div class="container">
-    <h1>Consulta de Prazos</h1>
+  <main class="container">
+    <section class="hero">
+      <h1>Consulta de Prazos</h1>
+      <p class="hero-sub">Prazo de entrega por cidade e transportadora</p>
+      <a class="pill-link" href="uf_transportadoras.jpeg" target="_blank">🗺️ UF de atendimento por transportadora</a>
+    </section>
 
-    <nav class="menu">
-      <ul>
-        <li><a href="uf_transportadoras.jpeg" target="_blank">UF DE ATENDIMENTO TRANSPORTADORA</a></li>
-      </ul>
-    </nav>
+    <!-- Aviso de acréscimo (aparece só quando há regra ativa) -->
+    <div id="bannerAcrescimo" class="banner" hidden></div>
 
     <!-- Barra do administrador (só aparece logado) -->
     <div id="adminBar" class="admin-bar" hidden>
       <span class="admin-tag">Modo administrador</span>
-      <button id="btnNovo" class="btn btn-verde">＋ Nova linha</button>
-      <button id="btnImportar" class="btn btn-laranja">📥 Importar planilha</button>
-      <button id="btnSair" class="btn btn-cinza">Sair</button>
+      <button id="btnNovo" class="btn btn-success">＋ Nova linha</button>
+      <button id="btnImportar" class="btn btn-warn">📥 Importar planilha</button>
+      <button id="btnAcrescimos" class="btn btn-primary">🗓️ Acréscimo de prazo</button>
+      <button id="btnSair" class="btn btn-ghost">Sair</button>
     </div>
 
-    <input type="text" id="searchGeral" placeholder="Digite cidade, transportadora ou UF..." autocomplete="off">
+    <section class="card busca-card">
+      <div class="busca">
+        <span class="busca-icone" aria-hidden="true">🔍</span>
+        <input type="text" id="searchGeral" placeholder="Digite cidade, transportadora ou UF..." autocomplete="off">
+      </div>
+      <div class="filtros">
+        <select id="selUF" aria-label="Filtrar por UF"><option value="">Todas as UFs</option></select>
+        <select id="selTransp" aria-label="Filtrar por transportadora"><option value="">Todas as transportadoras</option></select>
+        <select id="selTipo" aria-label="Filtrar por capital ou interior"><option value="">Capital e Interior</option></select>
+        <button id="btnLimpar" class="btn btn-ghost" type="button">Limpar filtros</button>
+      </div>
+    </section>
 
-    <div class="filtros">
-      <select id="selUF" aria-label="Filtrar por UF"><option value="">Todas as UFs</option></select>
-      <select id="selTransp" aria-label="Filtrar por transportadora"><option value="">Todas as transportadoras</option></select>
-      <select id="selTipo" aria-label="Filtrar por capital ou interior"><option value="">Capital e Interior</option></select>
-      <button id="btnLimpar" class="btn btn-cinza" type="button">Limpar filtros</button>
-    </div>
-
-    <div class="table-wrapper">
+    <section class="card tabela-card">
       <table id="results">
         <thead>
           <tr>
@@ -295,12 +480,14 @@ body.is-admin .col-acoes { display: table-cell; }
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </section>
 
-    <button id="btnMais" class="btn btn-laranja" hidden>Mostrar mais</button>
-    <p id="contadorResultados"></p>
-    <p id="ultimaAtualizacao">Última atualização: --</p>
-  </div>
+    <div class="rodape-lista">
+      <button id="btnMais" class="btn btn-primary" hidden>Mostrar mais</button>
+      <p id="contadorResultados"></p>
+      <p id="ultimaAtualizacao">Última atualização: --</p>
+    </div>
+  </main>
 
   <!-- Modal: login -->
   <div id="modalLogin" class="modal" hidden>
@@ -310,8 +497,8 @@ body.is-admin .col-acoes { display: table-cell; }
       <input type="password" id="inpPin" inputmode="numeric" autocomplete="off" placeholder="PIN">
       <p id="erroLogin" class="erro" hidden></p>
       <div class="modal-acoes">
-        <button id="btnLoginOk" class="btn btn-verde">Entrar</button>
-        <button class="btn btn-cinza" data-fechar>Cancelar</button>
+        <button class="btn btn-ghost" data-fechar>Cancelar</button>
+        <button id="btnLoginOk" class="btn btn-primary">Entrar</button>
       </div>
     </div>
   </div>
@@ -321,18 +508,18 @@ body.is-admin .col-acoes { display: table-cell; }
     <div class="modal-box">
       <h2 id="tituloEditar">Editar linha</h2>
       <form id="formEditar" autocomplete="off">
-        <label>Cidade <input name="cidade" required></label>
-        <label>Transportadora <input name="transportadora" list="dlTransp" required></label>
-        <label>UF <input name="uf" maxlength="2" style="text-transform:uppercase"></label>
-        <label>Prazo - Dias Úteis <input name="prazo"></label>
-        <label>Capital / Interior <input name="tipo" list="dlTipo"></label>
-        <label>Dias (coleta/entrega) - Frequência <input name="dias"></label>
+        <label class="campo">Cidade <input name="cidade" required></label>
+        <label class="campo">Transportadora <input name="transportadora" list="dlTransp" required></label>
+        <label class="campo">UF <input name="uf" maxlength="2" style="text-transform:uppercase"></label>
+        <label class="campo">Prazo - Dias Úteis <input name="prazo"></label>
+        <label class="campo">Capital / Interior <input name="tipo" list="dlTipo"></label>
+        <label class="campo">Dias (coleta/entrega) - Frequência <input name="dias"></label>
         <datalist id="dlTransp"></datalist>
         <datalist id="dlTipo"></datalist>
         <p id="erroEditar" class="erro" hidden></p>
         <div class="modal-acoes">
-          <button type="submit" id="btnSalvar" class="btn btn-verde">Salvar</button>
-          <button type="button" class="btn btn-cinza" data-fechar>Cancelar</button>
+          <button type="button" class="btn btn-ghost" data-fechar>Cancelar</button>
+          <button type="submit" id="btnSalvar" class="btn btn-primary">Salvar</button>
         </div>
       </form>
     </div>
@@ -346,15 +533,34 @@ body.is-admin .col-acoes { display: table-cell; }
       <input type="file" id="inpArquivo" accept=".xlsx,.xls">
 
       <fieldset class="modos">
-        <label><input type="radio" name="modo" value="mesclar" checked> <b>Atualizar:</b> altera as linhas existentes e adiciona as novas (não apaga nada)</label>
-        <label><input type="radio" name="modo" value="substituir"> <b>Substituir tudo:</b> apaga a base atual e usa só o arquivo (a planilha guarda um backup)</label>
+        <label><input type="radio" name="modo" value="mesclar" checked> <span><b>Atualizar:</b> altera as linhas existentes e adiciona as novas (não apaga nada)</span></label>
+        <label><input type="radio" name="modo" value="substituir"> <span><b>Substituir tudo:</b> apaga a base atual e usa só o arquivo (a planilha guarda um backup)</span></label>
       </fieldset>
 
       <div id="previaImport" class="previa" hidden></div>
       <p id="erroImport" class="erro" hidden></p>
       <div class="modal-acoes">
-        <button id="btnImportOk" class="btn btn-verde" disabled>Importar</button>
-        <button class="btn btn-cinza" data-fechar>Cancelar</button>
+        <button class="btn btn-ghost" data-fechar>Cancelar</button>
+        <button id="btnImportOk" class="btn btn-primary" disabled>Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: acréscimo de prazo -->
+  <div id="modalAcrescimos" class="modal" hidden>
+    <div class="modal-box modal-largo">
+      <h2>Acréscimo de prazo</h2>
+      <p class="muted">Soma dias ao prazo da transportadora em datas especiais (Black Friday, fim de ano...). O site mostra o prazo já somado, com o valor original riscado ao lado. Se você informar as datas, o acréscimo liga e desliga sozinho.</p>
+      <div id="listaAcrescimos" class="acr-lista"></div>
+      <button type="button" id="btnAddAcr" class="btn btn-ghost">＋ Adicionar transportadora</button>
+      <datalist id="dlMotivo">
+        <option value="Black Friday"></option>
+        <option value="Natal / Fim de ano"></option>
+      </datalist>
+      <p id="erroAcr" class="erro" hidden></p>
+      <div class="modal-acoes">
+        <button class="btn btn-ghost" data-fechar>Cancelar</button>
+        <button id="btnSalvarAcr" class="btn btn-primary">Salvar acréscimos</button>
       </div>
     </div>
   </div>
@@ -369,15 +575,16 @@ body.is-admin .col-acoes { display: table-cell; }
    ========================================================= */
 
 // >>> Cole aqui a URL do Web App (termina em /exec) <<<
-const API_URL = 'https://script.google.com/macros/s/AKfycbwaHHlJJwpX2h4kcqyAi4btVifv8SjuV4wfJt794EZjkPoqWNe7jn_MCf4hE56ag8H3/exec';
+const API_URL = 'COLE_AQUI_A_URL_DO_WEB_APP';
 
 const PAGE_SIZE = 100;
-const CACHE_KEY = 'prazos_cache_v2';
+const CACHE_KEY = 'prazos_cache_v3';
 const TOKEN_KEY = 'prazos_token';
 
 const state = {
   dados: [],
   filtrados: [],
+  acrescimos: [],
   visiveis: PAGE_SIZE,
   sort: { col: 'cidade', dir: 'asc' },
   token: null,
@@ -392,7 +599,7 @@ const collator = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base'
 
 /* ---------- Utilidades ---------- */
 function norm(s) {
-  return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '')
     .toLowerCase().trim().replace(/\s+/g, ' ');
 }
 function esc(s) {
@@ -400,6 +607,20 @@ function esc(s) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 function chave(r) { return norm(r.cidade) + '|' + norm(r.transportadora) + '|' + norm(r.uf); }
+
+// cor estável por transportadora (0–359)
+function hue(s) {
+  let h = 0;
+  const t = norm(s);
+  for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 360;
+  return h;
+}
+function tipoClasse(t) {
+  const n = norm(t);
+  if (n.startsWith('capital')) return 'chip-capital';
+  if (n === 'interior') return 'chip-interior';
+  return 'chip-outro';
+}
 
 let toastTimer;
 function toast(msg, erro) {
@@ -413,7 +634,83 @@ function toast(msg, erro) {
 
 function prepararRegistro(r) {
   r._busca = norm([r.cidade, r.transportadora, r.uf].join(' '));
+  r._extra = 0;
+  r._prazoAtual = r.prazo;
   return r;
+}
+
+/* ---------- Acréscimo de prazo ---------- */
+function hojeISO() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function regraAtiva(r, hoje) {
+  return r.ativo !== false && (!r.inicio || hoje >= r.inicio) && (!r.fim || hoje <= r.fim);
+}
+
+function regrasAtivas() {
+  const h = hojeISO();
+  return state.acrescimos.filter(r => regraAtiva(r, h));
+}
+
+// soma N a cada número do texto: "4" -> "6", "3 a 5" -> "5 a 7"
+function somarDias(prazo, extra) {
+  if (!extra) return prazo;
+  return String(prazo).replace(/\d+/g, n => String(parseInt(n, 10) + extra));
+}
+
+function dataCurta(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? `${m[3]}/${m[2]}` : '';
+}
+
+function recalcularExtras() {
+  const ativas = regrasAtivas();
+  const porTransp = {};
+  let todas = 0;
+  ativas.forEach(r => {
+    const k = norm(r.transportadora);
+    if (k === 'todas') todas += r.dias;
+    else porTransp[k] = (porTransp[k] || 0) + r.dias;
+  });
+  state.dados.forEach(d => {
+    const extra = (porTransp[norm(d.transportadora)] || 0) + todas;
+    const novo = somarDias(d.prazo, extra);
+    d._extra = novo !== d.prazo ? extra : 0; // prazo sem número não recebe acréscimo
+    d._prazoAtual = novo;
+  });
+  renderBanner(ativas);
+}
+
+function renderBanner(ativas) {
+  const el = $('bannerAcrescimo');
+  if (!ativas.length) { el.hidden = true; el.innerHTML = ''; return; }
+
+  const grupos = new Map();
+  ativas.forEach(r => {
+    const m = r.motivo || 'Prazos com acréscimo';
+    if (!grupos.has(m)) grupos.set(m, []);
+    grupos.get(m).push(r);
+  });
+
+  const linhas = [...grupos].map(([motivo, rs]) => `
+    <div class="banner-linha"><b>${esc(motivo)}:</b>
+      ${rs.map(r => {
+        const nome = norm(r.transportadora) === 'todas' ? 'Todas as transportadoras' : r.transportadora;
+        return `<span class="tag-extra">${esc(nome)} +${r.dias} ${r.dias > 1 ? 'dias' : 'dia'}${r.fim ? ' · até ' + dataCurta(r.fim) : ''}</span>`;
+      }).join('')}
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div class="banner-icone">⚠️</div>
+    <div>
+      <div class="banner-titulo">Atenção: prazos com acréscimo</div>
+      ${linhas}
+      <div class="banner-nota">Os prazos da lista já estão somados. O valor original aparece riscado ao lado.</div>
+    </div>`;
+  el.hidden = false;
 }
 
 /* ---------- API ---------- */
@@ -444,7 +741,7 @@ async function carregar() {
   // Mostra o cache na hora (se existir) enquanto busca a versão nova
   try {
     const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-    if (cache && Array.isArray(cache.dados)) aplicarDados(cache.dados, cache.atualizadoEm);
+    if (cache && Array.isArray(cache.dados)) aplicarDados(cache.dados, cache.atualizadoEm, cache.acrescimos);
     else tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
   } catch (e) {
     tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
@@ -454,7 +751,7 @@ async function carregar() {
     const res = await fetch(API_URL + '?action=listar');
     const json = await res.json();
     if (!json.ok) throw new Error(json.erro || 'Falha ao carregar.');
-    aplicarDados(json.dados, json.atualizadoEm);
+    aplicarDados(json.dados, json.atualizadoEm, json.acrescimos);
     salvarCache();
   } catch (err) {
     if (!state.dados.length) {
@@ -468,17 +765,21 @@ async function carregar() {
 function salvarCache() {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify({
-      dados: state.dados.map(({ _busca, ...r }) => r),
+      dados: state.dados.map(({ id, cidade, transportadora, uf, prazo, tipo, dias }) =>
+        ({ id, cidade, transportadora, uf, prazo, tipo, dias })),
+      acrescimos: state.acrescimos,
       atualizadoEm: state.atualizadoEm
     }));
   } catch (e) { /* cache é opcional */ }
 }
 
-function aplicarDados(dados, atualizadoEm) {
+function aplicarDados(dados, atualizadoEm, acrescimos) {
   state.dados = (dados || []).map(prepararRegistro);
   state.atualizadoEm = atualizadoEm || null;
+  state.acrescimos = Array.isArray(acrescimos) ? acrescimos : [];
   mostrarAtualizacao();
   popularFiltros();
+  recalcularExtras();
   aplicarFiltros();
 }
 
@@ -537,7 +838,8 @@ function aplicarFiltros() {
 function ordenar() {
   const { col, dir } = state.sort;
   const f = dir === 'asc' ? 1 : -1;
-  state.filtrados.sort((a, b) => f * collator.compare(a[col] || '', b[col] || ''));
+  const valor = d => (col === 'prazo' ? d._prazoAtual : d[col]) || '';
+  state.filtrados.sort((a, b) => f * collator.compare(valor(a), valor(b)));
   document.querySelectorAll('th.ord').forEach(th => {
     th.classList.remove('asc', 'desc');
     if (th.dataset.col === col) th.classList.add(dir);
@@ -555,19 +857,24 @@ function renderizar() {
     return;
   }
 
-  tbody.innerHTML = lista.map(d => `
+  tbody.innerHTML = lista.map(d => {
+    const prazo = d._extra
+      ? `<span class="prazo-wrap"><span class="prazo-novo com-extra">${esc(d._prazoAtual)}</span><span class="prazo-base">${esc(d.prazo)}</span><span class="tag-extra">+${d._extra}</span></span>`
+      : `<span class="prazo-novo">${esc(d.prazo)}</span>`;
+    return `
     <tr>
-      <td>${esc(d.cidade)}</td>
-      <td>${esc(d.transportadora)}</td>
-      <td>${esc(d.uf)}</td>
-      <td>${esc(d.prazo)}</td>
-      <td>${esc(d.tipo)}</td>
-      <td>${esc(d.dias)}</td>
+      <td data-label="Cidade" class="td-cidade">${esc(d.cidade)}</td>
+      <td data-label="Transportadora"><span class="badge-transp" style="--h:${hue(d.transportadora)}">${esc(d.transportadora)}</span></td>
+      <td data-label="UF"><span class="uf">${esc(d.uf)}</span></td>
+      <td data-label="Prazo (dias úteis)">${prazo}</td>
+      <td data-label="Capital / Interior" class="${d.tipo ? '' : 'sem'}">${d.tipo ? `<span class="chip ${tipoClasse(d.tipo)}">${esc(d.tipo)}</span>` : '<span class="vazio">—</span>'}</td>
+      <td data-label="Coleta/entrega - Frequência" class="td-dias ${d.dias ? '' : 'sem'}">${d.dias ? esc(d.dias) : '<span class="vazio">—</span>'}</td>
       <td class="col-acoes">
         <button class="acao" data-acao="editar" data-id="${esc(d.id)}" title="Editar">✏️</button>
         <button class="acao" data-acao="excluir" data-id="${esc(d.id)}" title="Excluir">🗑️</button>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
   $('contadorResultados').textContent =
     `${total} resultado${total > 1 ? 's' : ''} encontrado${total > 1 ? 's' : ''}` +
@@ -599,17 +906,25 @@ document.querySelectorAll('th.ord').forEach(th => {
   });
 });
 
-/* ---------- Download Excel (respeita os filtros ativos) ---------- */
+/* ---------- Download Excel (respeita filtros e acréscimos) ---------- */
 $('btnDownload').addEventListener('click', () => {
   if (!state.dados.length) { alert('Os dados ainda não carregaram.'); return; }
-  const planilha = state.filtrados.map(d => ({
-    'Cidade': d.cidade,
-    'Transportadora': d.transportadora,
-    'UF': d.uf,
-    'Prazo - Dias Úteis': d.prazo,
-    'Capital / Interior': d.tipo,
-    'Dias (coleta/entrega) - Frequência': d.dias
-  }));
+  const comExtra = state.filtrados.some(d => d._extra);
+  const planilha = state.filtrados.map(d => {
+    const linha = {
+      'Cidade': d.cidade,
+      'Transportadora': d.transportadora,
+      'UF': d.uf,
+      'Prazo - Dias Úteis': d._prazoAtual,
+      'Capital / Interior': d.tipo,
+      'Dias (coleta/entrega) - Frequência': d.dias
+    };
+    if (comExtra) {
+      linha['Prazo base'] = d.prazo;
+      linha['Acréscimo (dias)'] = d._extra || 0;
+    }
+    return linha;
+  });
   const ws = XLSX.utils.json_to_sheet(planilha);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Prazos');
@@ -635,7 +950,7 @@ function entrarAdmin(token) {
   sessionStorage.setItem(TOKEN_KEY, token);
   document.body.classList.add('is-admin');
   $('adminBar').hidden = false;
-  $('btnAdmin').textContent = '🔓 Administrador';
+  $('btnAdmin').innerHTML = '🔓 <span class="so-desktop">Administrador</span>';
   $('btnAdmin').classList.add('ativo');
 }
 
@@ -644,7 +959,7 @@ function sairAdmin(silencioso) {
   sessionStorage.removeItem(TOKEN_KEY);
   document.body.classList.remove('is-admin');
   $('adminBar').hidden = true;
-  $('btnAdmin').textContent = '🔒 Administrador';
+  $('btnAdmin').innerHTML = '🔒 <span class="so-desktop">Administrador</span>';
   $('btnAdmin').classList.remove('ativo');
   if (!silencioso) toast('Você saiu do modo administrador.');
 }
@@ -742,9 +1057,108 @@ $('formEditar').addEventListener('submit', async e => {
 function depoisDeAlterar() {
   mostrarAtualizacao();
   popularFiltros();
+  recalcularExtras();
   aplicarFiltros();
   salvarCache();
 }
+
+/* ---------- Acréscimos (admin) ---------- */
+function linhaAcrescimo(r) {
+  r = r || { transportadora: '', dias: 1, motivo: '', inicio: '', fim: '', ativo: true };
+  const nomes = unicos(state.dados.map(d => d.transportadora));
+  if (r.transportadora && norm(r.transportadora) !== 'todas' &&
+      !nomes.some(n => norm(n) === norm(r.transportadora))) nomes.push(r.transportadora);
+
+  const opcoes = ['<option value="">Selecione...</option>',
+    `<option value="TODAS"${norm(r.transportadora) === 'todas' ? ' selected' : ''}>Todas as transportadoras</option>`]
+    .concat(nomes.map(n => `<option value="${esc(n)}"${norm(n) === norm(r.transportadora) ? ' selected' : ''}>${esc(n)}</option>`))
+    .join('');
+
+  const div = document.createElement('div');
+  div.className = 'acr-linha';
+  div.innerHTML = `
+    <label class="campo campo-transp">Transportadora<select data-f="transportadora">${opcoes}</select></label>
+    <label class="campo">Acréscimo (dias)<input type="number" min="1" max="60" step="1" data-f="dias" value="${esc(r.dias)}"></label>
+    <label class="campo campo-motivo">Motivo<input type="text" list="dlMotivo" data-f="motivo" value="${esc(r.motivo)}" placeholder="Ex.: Black Friday"></label>
+    <label class="campo">De (opcional)<input type="date" data-f="inicio" value="${esc(r.inicio)}"></label>
+    <label class="campo">Até (opcional)<input type="date" data-f="fim" value="${esc(r.fim)}"></label>
+    <label class="switch"><input type="checkbox" data-f="ativo" ${r.ativo !== false ? 'checked' : ''}><span>Ativo</span></label>
+    <button type="button" class="acao" data-remover title="Remover">🗑️</button>`;
+  return div;
+}
+
+function vazioAcrescimos() {
+  const lista = $('listaAcrescimos');
+  const tem = lista.querySelector('.acr-linha');
+  const aviso = lista.querySelector('.acr-vazio');
+  if (!tem && !aviso) lista.insertAdjacentHTML('beforeend', '<div class="acr-vazio">Nenhum acréscimo cadastrado. Clique em “Adicionar transportadora”.</div>');
+  if (tem && aviso) aviso.remove();
+}
+
+$('btnAcrescimos').addEventListener('click', () => {
+  const lista = $('listaAcrescimos');
+  lista.innerHTML = '';
+  state.acrescimos.forEach(r => lista.appendChild(linhaAcrescimo(r)));
+  vazioAcrescimos();
+  $('erroAcr').hidden = true;
+  abrir('modalAcrescimos');
+});
+
+$('btnAddAcr').addEventListener('click', () => {
+  const lista = $('listaAcrescimos');
+  const aviso = lista.querySelector('.acr-vazio');
+  if (aviso) aviso.remove();
+  lista.appendChild(linhaAcrescimo(null));
+});
+
+$('listaAcrescimos').addEventListener('click', e => {
+  const b = e.target.closest('[data-remover]');
+  if (!b) return;
+  b.closest('.acr-linha').remove();
+  vazioAcrescimos();
+});
+
+$('btnSalvarAcr').addEventListener('click', async () => {
+  const erro = $('erroAcr');
+  erro.hidden = true;
+  const regras = [];
+  for (const linha of $('listaAcrescimos').querySelectorAll('.acr-linha')) {
+    const v = f => linha.querySelector(`[data-f="${f}"]`);
+    const r = {
+      transportadora: v('transportadora').value.trim(),
+      dias: parseInt(v('dias').value, 10),
+      motivo: v('motivo').value.trim(),
+      inicio: v('inicio').value,
+      fim: v('fim').value,
+      ativo: v('ativo').checked
+    };
+    if (!r.transportadora) { erro.textContent = 'Selecione a transportadora em todas as linhas.'; erro.hidden = false; return; }
+    if (!(r.dias >= 1 && r.dias <= 60)) { erro.textContent = 'O acréscimo deve ser entre 1 e 60 dias.'; erro.hidden = false; return; }
+    if (r.inicio && r.fim && r.fim < r.inicio) { erro.textContent = `A data final está antes da inicial (${r.transportadora}).`; erro.hidden = false; return; }
+    regras.push(r);
+  }
+
+  const btn = $('btnSalvarAcr');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+  try {
+    const r = await api('salvarAcrescimos', { regras });
+    state.acrescimos = r.regras;
+    state.atualizadoEm = r.atualizadoEm;
+    mostrarAtualizacao();
+    recalcularExtras();
+    aplicarFiltros();
+    salvarCache();
+    fechar('modalAcrescimos');
+    toast(regras.length ? 'Acréscimos salvos.' : 'Acréscimos removidos.');
+  } catch (err) {
+    erro.textContent = err.message;
+    erro.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar acréscimos';
+  }
+});
 
 /* ---------- Importador ---------- */
 $('btnImportar').addEventListener('click', () => {
@@ -798,14 +1212,19 @@ function matrizParaRegistros(matriz) {
   if (cab.some(h => h.includes('cidade'))) {
     inicio = 1;
     const achado = {};
+    let prazoBase;
     cab.forEach((h, i) => {
-      if (h.includes('cidade')) achado.cidade = i;
+      if (h.includes('acrescimo')) return; // coluna extra do download do site
+      if (h.includes('prazo') && h.includes('base')) prazoBase = i;
+      else if (h.includes('cidade')) achado.cidade = i;
       else if (h.includes('transport')) achado.transportadora = i;
       else if (h === 'uf') achado.uf = i;
       else if (h.includes('prazo')) achado.prazo = i;
       else if (h.includes('capital') || h.includes('interior')) achado.tipo = i;
       else if (h.includes('dias') || h.includes('frequencia') || h.includes('regiao')) achado.dias = i;
     });
+    // se for um arquivo baixado do site com acréscimo, o prazo original está em "Prazo base"
+    if (prazoBase !== undefined) achado.prazo = prazoBase;
     if (achado.cidade === undefined || achado.transportadora === undefined) {
       throw new Error('Cabeçalho precisa ter as colunas Cidade e Transportadora.');
     }
